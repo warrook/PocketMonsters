@@ -2,15 +2,26 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum Faction
+{
+	Player,
+	Enemy
+}
+
 public class Monster
 {
+
 	public List<Essence.Type> Essences = new List<Essence.Type>();
 	public Dictionary<Essence.Type, float> DamageInteractions = new Dictionary<Essence.Type, float>();
+	public Dictionary<Stat.Name, Stat> Stats = new Dictionary<Stat.Name, Stat>();
+	public Action[] Moves = new Action[4];
 	public string Name;
 	public string Sex;
 	public byte Level;
-	public Dictionary<Stat.Name, Stat> Stats = new Dictionary<Stat.Name, Stat>();
-	public Move[] Moves = new Move[4];
+	public int HP;
+	public Faction Faction;
+	public string Owner;
+	public bool Active;
 	
 	public Stat Power
 	{
@@ -47,9 +58,13 @@ public class Monster
 		get { return Stats[Stat.Name.Health]; }
 		set { Stats[Stat.Name.Health] = value; }
 	}
-	
-	
+
 	public override string ToString()
+	{
+		return Name + " - lv " + Level + " - " + Essences[0] + "/" + Essences[1];
+	}
+
+	public string ToStringLong()
 	{
 		return Name
 			+ " - lv " + Level
@@ -64,13 +79,18 @@ public class Monster
 				+ Health
 			+ "]";
 	}
-	
 
 	public Monster(string name)
 	{
 		Initialize(name);
-		DamageInteractions = CalculateInteractions();
-		LevelUp(); // Make sure we start at 1 (and provides a little boost to stats)
+		
+	}
+
+	public Monster(string name, bool active, string owner)
+	{
+		Initialize(name);
+		Active = active;
+		Owner = owner;
 	}
 
 	// SETTERS
@@ -96,6 +116,11 @@ public class Monster
 		}
 	}
 
+	public void SetActive(bool active)
+	{
+		Active = active;
+	}
+
 	// UTILITY FUNCTIONS
 
 	public void LevelUp()
@@ -112,6 +137,14 @@ public class Monster
 		for (int i = 0; i < num_levels; i++)
 		{
 			LevelUp();
+		}
+	}
+
+	public void TakeDamage(Damage[] damage_info)
+	{
+		foreach (Damage dmg in damage_info)
+		{
+			HP -= Mathf.FloorToInt(dmg.Amount * DamageInteractions[dmg.Essence]);
 		}
 	}
 
@@ -144,7 +177,6 @@ public class Monster
 		return final;
 	}
 
-
 	public void Initialize(string name)
 	{
 		Name = name;
@@ -160,12 +192,12 @@ public class Monster
 					new Stat(1.1f, Stat.Scale_Factor.A), // MPWR
 					new Stat(1.0f, Stat.Scale_Factor.D), // MDEF
 					new Stat(1.9f, Stat.Scale_Factor.B), // DGE
-					new Stat(2f, Stat.Scale_Factor.B), // SPD
-					new Stat(1.2f, Stat.Scale_Factor.C) // HP
+					new Stat(2.0f, Stat.Scale_Factor.B), // SPD
+					new Stat(1.2f, Stat.Scale_Factor.C)  // HP
 				});
-				Moves = new Move[]
+				Moves = new Action[]
 				{
-					new Move_Bolt()
+					new Attack_Bolt()
 				};
 				break;
 			case "Flicker":
@@ -177,16 +209,33 @@ public class Monster
 					new Stat(1.1f, Stat.Scale_Factor.E), // MPWR
 					new Stat(1.0f, Stat.Scale_Factor.E), // MDEF
 					new Stat(1.9f, Stat.Scale_Factor.B), // DGE
-					new Stat(2f, Stat.Scale_Factor.S), // SPD
-					new Stat(1.2f, Stat.Scale_Factor.B) // HP
+					new Stat(2.0f, Stat.Scale_Factor.S), // SPD
+					new Stat(1.2f, Stat.Scale_Factor.B)  // HP
 				});
-				Moves = new Move[]
+				Moves = new Action[]
 				{
-					new Move_Flame()
+					new Attack_Flame()
 				};
+				break;
+			case "Murderghost":
+				SetEssences(Essence.Type.death, Essence.Type.shadow);
+				SetStats(new Stat[]
+				{
+					new Stat(1.0f, Stat.Scale_Factor.D), // PWR
+					new Stat(1.0f, Stat.Scale_Factor.D), // DEF
+					new Stat(1.0f, Stat.Scale_Factor.D), // MPWR
+					new Stat(1.0f, Stat.Scale_Factor.D), // MDEF
+					new Stat(1.0f, Stat.Scale_Factor.D), // DGE
+					new Stat(1.0f, Stat.Scale_Factor.D), // SPD
+					new Stat(1.0f, Stat.Scale_Factor.D)  // HP
+				});
 				break;
 			default:
 				throw new KeyNotFoundException("Monster '" + name + "' does not exist.");
 		}
+
+		HP = Health.Value;
+		DamageInteractions = CalculateInteractions();
+		LevelUp(); // Make sure we start at 1 (and provides a little boost to stats)
 	}
 }

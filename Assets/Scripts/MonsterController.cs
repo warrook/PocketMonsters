@@ -9,6 +9,9 @@ public class MonsterController : MonoBehaviour
 	public List<Monster> Team_Enemy;
 
 	public static CombatController CombatController;
+	public int selectionGridInt = 0;
+	bool doAdd = false;
+	bool doTurn = false;
 
 	void InitializeDB()
 	{
@@ -29,15 +32,15 @@ public class MonsterController : MonoBehaviour
 
 	public void EnterCombat()
 	{
-		//CombatController = new CombatController();
+		CombatController = new CombatController(this);
 	}
 
 	// Use this for initialization
 	void Start ()
 	{
+		Debug.LogWarning("Starting MonsterController");
 		InitializeDB();
-		Debug.Log("Adding component");
-		CombatController = new CombatController(this);
+		EnterCombat();
 
 		Debug.Log("0: " + MonsterDB[0].ToStringLong());
 		Debug.Log("1: " + MonsterDB[1].ToStringLong());
@@ -46,43 +49,56 @@ public class MonsterController : MonoBehaviour
 		MonsterDB[1].LevelUp(99);
 		Debug.Log("0: " + MonsterDB[0].ToStringLong());
 		Debug.Log("1: " + MonsterDB[1].ToStringLong());
-
 	}
 
 	private void Update()
 	{
 		if (Input.GetKeyDown(KeyCode.Space))
+			doTurn = true;
+		if (Input.GetKeyDown(KeyCode.Equals))
+			doAdd = true;
+	}
+
+	private void FixedUpdate()
+	{
+		if (doTurn)
 		{
 			CombatController.EndTurn();
+			doTurn = false;
 		}
-		if (Input.GetKeyDown(KeyCode.Equals))
+		if (doAdd)
 		{
 			Team_Player.Add(new Monster("Murderghost", true, "player"));
+			doAdd = false;
+			EnterCombat();
 		}
+
+		if (CombatController != null)
+			CombatController.Update();
 	}
 
 	private void OnGUI()
 	{
 		if (CombatController != null)
 		{
+			// Center
 			GUI.BeginGroup(new Rect(Screen.width / 2 - 150, Screen.height / 2 - 150, 300, 300));
 			GUI.Box(new Rect(0, 0, 300, 300), "Targeting");
-			for (int i = 0; i < Team_Enemy.Count; i++)
-			{
-				Monster m = Team_Enemy[i];
-				if (GUI.Button(new Rect(10, 40 + 40 * i, 280, 30), m.ToString()))
-				{
-					CombatController.Target = m;
-				}
-			}
 
 			if (CombatController.Target != null)
 			{
 				GUI.Label(new Rect(10, 40 * (Team_Enemy.Count + 1), 280, 250), "Target: " + CombatController.Target.ToString());
 			}
-
+			List<string> strings = new List<string>();
+			foreach (Monster m in Team_Enemy)
+			{
+				strings.Add(m.ToString());
+			}
+			selectionGridInt = GUI.SelectionGrid(new Rect(10, 40, 280, 30 * strings.Count), selectionGridInt, strings.ToArray(), 1);
+			CombatController.Target = Team_Enemy[selectionGridInt];
 			GUI.EndGroup();
 
+			// Top Left
 			GUI.BeginGroup(new Rect(10, 10, 250, 250));
 			GUI.Box(new Rect(0, 0, 250, 100), "Team_Player");
 			string write = "";
@@ -93,17 +109,20 @@ public class MonsterController : MonoBehaviour
 			GUI.Label(new Rect(10, 20, 240, 230), write);
 			GUI.EndGroup();
 
-			if (CombatController != null)
+			//Top Right
+			GUI.BeginGroup(new Rect(Screen.width - 210, 10, 200, 300));
+			write = "";
+			for (int i = 0; i < CombatController.Battlers.Count; i++)
 			{
-				GUI.BeginGroup(new Rect(Screen.width - 210, 10, 200, 300));
-				write = "";
-				foreach (Monster m in CombatController.Battlers)
-				{
-					write += m.Owner + " - " + m.Name + "::" + m.Speed.Value + "\n";
-				}
-				GUI.Label(new Rect(0, 0, 200, 300), write);
-				GUI.EndGroup();
+				Monster m = CombatController.Battlers[i];
+				if (CombatController.Turn_Counter - CombatController.Battlers.Count * CombatController.Round_Counter == i)
+					write += "> ";
+				//Debug.LogWarning(i + ": " + (CombatController.Turn_Counter - CombatController.Battlers.Count * CombatController.Round_Counter).ToString());
+				write += m.Owner + " - " + m.Name + "::" + m.Speed.Value + "\n";
 			}
+			GUI.Label(new Rect(0, 0, 200, 300), write);
+			GUI.Label(new Rect(0, 150, 200, 300), "Turn " + CombatController.Turn_Counter + ", Round " + CombatController.Round_Counter);
+			GUI.EndGroup();
 		}
 	}
 }

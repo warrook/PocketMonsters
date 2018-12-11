@@ -15,6 +15,7 @@ public class Monster
 	public Dictionary<Essence.Type, float> DamageInteractions = new Dictionary<Essence.Type, float>();
 	public Dictionary<Stat.Name, Stat> Stats = new Dictionary<Stat.Name, Stat>();
 	public Action[] Moves = new Action[4];
+	public List<string> Tags = new List<string>();
 	public string Name;
 	public string Sex;
 	public byte Level;
@@ -184,7 +185,7 @@ public class Monster
 		switch(name)
 		{
 			case "Fuse":
-				SetEssences(Essence.Type.storm, Essence.Type.fire);
+				SetEssences(Essence.Type.Storm, Essence.Type.Fire);
 				SetStats(new Stat[]
 				{
 					new Stat(1.0f, Stat.Scale_Factor.D), // PWR
@@ -201,7 +202,7 @@ public class Monster
 				};
 				break;
 			case "Flicker":
-				SetEssences(Essence.Type.fire);
+				SetEssences(Essence.Type.Fire);
 				SetStats(new Stat[]
 				{
 					new Stat(1.0f, Stat.Scale_Factor.A), // PWR
@@ -218,7 +219,7 @@ public class Monster
 				};
 				break;
 			case "Murderghost":
-				SetEssences(Essence.Type.death, Essence.Type.shadow);
+				SetEssences(Essence.Type.Death, Essence.Type.Shadow);
 				SetStats(new Stat[]
 				{
 					new Stat(1.0f, Stat.Scale_Factor.D), // PWR
@@ -229,6 +230,10 @@ public class Monster
 					new Stat(1.0f, Stat.Scale_Factor.D), // SPD
 					new Stat(1.0f, Stat.Scale_Factor.D)  // HP
 				});
+				Moves = new Action[]
+				{
+					new Attack_Haunt()
+				};
 				break;
 			default:
 				throw new KeyNotFoundException("Monster '" + name + "' does not exist.");

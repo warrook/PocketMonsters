@@ -6,39 +6,36 @@ public static class Essence
 {
 	public enum Type
 	{
-		none,
-		air,
-		artificial,
-		beast,
-		death,
-		earth,
-		fire,
-		knowledge,
-		light,
-		plant,
-		shadow,
-		storm,
-		water
+		None,
+		Air,
+		Arcane,
+		Body,
+		Death,
+		Earth,
+		Fire,
+		Light,
+		Mind,
+		Shadow,
+		Storm,
+		Water
 	}
 
 	public enum Effectivity
 	{
-		none,
-		v_weak,
-		weak,
-		strong,
-		v_strong
+		None,
+		Weak,
+		Strong
 	}
 
 	public static float GetEffectivityValue(Effectivity eff)
 	{
 		switch (eff)
 		{
-			case Effectivity.none:
+			case Effectivity.None:
 				return 0;
-			case Effectivity.weak:
+			case Effectivity.Weak:
 				return 0.5f;
-			case Effectivity.strong:
+			case Effectivity.Strong:
 				return 2f;
 			default:
 				return 1f;
@@ -51,69 +48,71 @@ public static class Essence
 
 		switch (type)
 		{
-			case Type.air:
-				d[Type.storm] = Effectivity.weak;
-				d[Type.plant] = Effectivity.strong;
+			case Type.Air:
+				d[Type.Air] = Effectivity.Weak;
+				d[Type.Fire] = Effectivity.Strong;
+				d[Type.Storm] = Effectivity.Weak;
 				break;
-			case Type.artificial:
-				d[Type.beast] = Effectivity.strong;
-				d[Type.death] = Effectivity.strong;
-				d[Type.plant] = Effectivity.strong;
+			case Type.Arcane:
+				d[Type.Arcane] = Effectivity.Weak;
+				d[Type.Body] = Effectivity.Strong;
+				d[Type.Death] = Effectivity.Strong;
+				d[Type.Mind] = Effectivity.Weak;
+				d[Type.Storm] = Effectivity.Strong;
 				break;
-			case Type.beast:
-				d[Type.artificial] = Effectivity.weak;
-				d[Type.knowledge] = Effectivity.weak;
-				d[Type.plant] = Effectivity.strong;
+			case Type.Body:
+				d[Type.Death] = Effectivity.None;
+				d[Type.Shadow] = Effectivity.Weak;
 				break;
-			case Type.death:
-				d[Type.death] = Effectivity.none;
-				d[Type.artificial] = Effectivity.weak;
-				d[Type.shadow] = Effectivity.weak;
-				d[Type.beast] = Effectivity.strong;
-				d[Type.knowledge] = Effectivity.strong;
-				d[Type.light] = Effectivity.strong;
-				d[Type.plant] = Effectivity.strong;
+			case Type.Death:
+				d[Type.Arcane] = Effectivity.Weak;
+				d[Type.Body] = Effectivity.Strong;
+				d[Type.Death] = Effectivity.Weak;
+				d[Type.Light] = Effectivity.Weak;
+				d[Type.Mind] = Effectivity.Strong;
 				break;
-			case Type.earth:
-				d[Type.air] = Effectivity.weak;
-				d[Type.plant] = Effectivity.weak;
-				d[Type.water] = Effectivity.weak;
-				d[Type.fire] = Effectivity.strong;
-				d[Type.storm] = Effectivity.strong;
+			case Type.Earth:
+				d[Type.Air] = Effectivity.Weak;
+				d[Type.Earth] = Effectivity.Weak;
+				d[Type.Fire] = Effectivity.Strong;
+				d[Type.Storm] = Effectivity.Weak;
 				break;
-			case Type.fire:
-				d[Type.water] = Effectivity.weak;
-				d[Type.air] = Effectivity.strong;
-				d[Type.death] = Effectivity.strong;
-				d[Type.plant] = Effectivity.strong;
+			case Type.Fire:
+				d[Type.Air] = Effectivity.Weak;
+				d[Type.Death] = Effectivity.Strong;
+				d[Type.Earth] = Effectivity.Weak;
+				d[Type.Fire] = Effectivity.Weak;
+				d[Type.Storm] = Effectivity.Weak;
 				break;
-			case Type.knowledge:
-				d[Type.artificial] = Effectivity.strong;
-				d[Type.beast] = Effectivity.strong;
-				d[Type.death] = Effectivity.strong;
+			case Type.Light:
+				d[Type.Death] = Effectivity.Strong;
+				d[Type.Light] = Effectivity.None;
+				d[Type.Shadow] = Effectivity.Strong;
 				break;
-			case Type.light:
-				d[Type.death] = Effectivity.weak;
-				d[Type.shadow] = Effectivity.strong;
+			case Type.Mind:
+				d[Type.Arcane] = Effectivity.Strong;
+				d[Type.Death] = Effectivity.Weak;
+				d[Type.Mind] = Effectivity.Weak;
+				d[Type.Shadow] = Effectivity.Weak;
 				break;
-			case Type.plant:
-				d[Type.earth] = Effectivity.strong;
-				d[Type.fire] = Effectivity.weak;
-				d[Type.water] = Effectivity.strong;
+			case Type.Shadow:
+				d[Type.Body] = Effectivity.Strong;
+				d[Type.Mind] = Effectivity.Strong;
+				d[Type.Light] = Effectivity.Weak;
+				d[Type.Shadow] = Effectivity.None;
 				break;
-			case Type.shadow:
-				d[Type.light] = Effectivity.weak;
-				d[Type.death] = Effectivity.strong;
-				d[Type.plant] = Effectivity.strong;
+			case Type.Storm:
+				d[Type.Air] = Effectivity.Strong;
+				d[Type.Arcane] = Effectivity.Weak;
+				d[Type.Earth] = Effectivity.Strong;
+				d[Type.Storm] = Effectivity.Weak;
+				d[Type.Water] = Effectivity.Strong;
 				break;
-			case Type.storm:
-				d[Type.earth] = Effectivity.weak;
-				d[Type.air] = Effectivity.strong;
-				d[Type.water] = Effectivity.strong;
-				break;
-			case Type.water:
-				d[Type.fire] = Effectivity.strong;
-				d[Type.earth] = Effectivity.strong;
+			case Type.Water:
+				d[Type.Earth] = Effectivity.Strong;
+				d[Type.Fire] = Effectivity.Strong;
+				d[Type.Storm] = Effectivity.Weak;
+				d[Type.Water] = Effectivity.Weak;
 				break;
 		}
 

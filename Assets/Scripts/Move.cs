@@ -48,9 +48,10 @@ public class Action
 	}
 
 	/// <summary>
-	/// Default use method.
+	/// Default use method. Override this in the move itself
+	/// if it needs to do anything other than basic attack damage.
 	/// </summary>
-	public void Use()
+	public virtual void Use()
 	{
 		if (TryHit(User, Targets[0]))
 		{
@@ -61,6 +62,12 @@ public class Action
 		}
 	}
 
+	/// <summary>
+	/// Calculate if move hits or not.
+	/// </summary>
+	/// <param name="user">Monster using the move</param>
+	/// <param name="target">Monster receiving the move</param>
+	/// <returns>Hit</returns>
 	protected bool TryHit(Monster user, Monster target)
 	{
 		var move_acc = (float)Info[Key.Base_Accuracy];
@@ -90,7 +97,7 @@ public class Attack_Bolt : Action
 {
 	public Attack_Bolt()
 	{
-		var ess = new List<Essence.Type> { Essence.Type.storm };
+		var ess = new List<Essence.Type> { Essence.Type.Storm };
 		var d = new KeyValuePair<Stat.Name, float>[1] { new KeyValuePair<Stat.Name, float>(Stat.Name.M_Power, 0.2f) };
 
 		AttackVars(1, 30, 1f, ess, d);
@@ -102,10 +109,22 @@ public class Attack_Flame : Action
 {
 	public Attack_Flame()
 	{
-		var ess = new List<Essence.Type> { Essence.Type.fire };
+		var ess = new List<Essence.Type> { Essence.Type.Fire };
 		var d = new KeyValuePair<Stat.Name, float>[1] { new KeyValuePair<Stat.Name, float>(Stat.Name.M_Power, 0.2f) };
 
 		AttackVars(1, 30, 1f, ess, d);
+		Info.Add(Key.Targets, new string[] { "enemy" });
+	}
+}
+
+public class Attack_Haunt : Action
+{
+	public Attack_Haunt()
+	{
+		var ess = new List<Essence.Type> { Essence.Type.Death };
+		var d = new KeyValuePair<Stat.Name, float>[1] { new KeyValuePair<Stat.Name, float>(Stat.Name.M_Power, 0.5f) };
+
+		AttackVars(1, 40, 1f, ess, d);
 		Info.Add(Key.Targets, new string[] { "enemy" });
 	}
 }
